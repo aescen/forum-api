@@ -17,6 +17,10 @@ describe('ThreadRepositoryPostgres', () => {
   });
 
   describe('addThread function', () => {
+    beforeEach(async () => {
+      await UsersTableTestHelper.addUser({ username: 'dicoding' });
+    });
+
     it('should persist add thread', async () => {
       // Arrange
       const addThread = new AddThread({
@@ -26,7 +30,6 @@ describe('ThreadRepositoryPostgres', () => {
       const userId = 'user-123';
       const fakeId = () => 123; // stub
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeId);
-      await UsersTableTestHelper.addUser({ username: 'dicoding' });
 
       // Action
       await threadRepositoryPostgres.addThread(addThread, userId);
@@ -45,7 +48,6 @@ describe('ThreadRepositoryPostgres', () => {
       const userId = 'user-123';
       const fakeId = () => 123; // stub
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeId);
-      await UsersTableTestHelper.addUser({ username: 'dicoding' });
 
       // Action
       const addedThread = await threadRepositoryPostgres.addThread(addThread, userId);

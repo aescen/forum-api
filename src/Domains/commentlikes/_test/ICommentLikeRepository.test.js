@@ -10,6 +10,5 @@ describe('ICommentLikeRepository interface', () => {
     await expect(iCommentLikeRepository.getCommentLikeId('', '')).rejects.toThrowError('COMMENT_LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
     await expect(iCommentLikeRepository.deleteCommentLikeById('')).rejects.toThrowError('COMMENT_LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
     await expect(iCommentLikeRepository.verifyCommentLikeOwner('', '')).rejects.toThrowError('COMMENT_LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
-    await expect(iCommentLikeRepository.getCommentLikesByCommentId('')).rejects.toThrowError('COMMENT_LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   });
 });

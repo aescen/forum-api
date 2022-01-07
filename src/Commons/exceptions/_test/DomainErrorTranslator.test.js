@@ -35,6 +35,12 @@ describe('DomainErrorTranslator', () => {
       .toStrictEqual(new InvariantError('tidak dapat membuat reply baru karena properti yang dibutuhkan tidak ada'));
     expect(DomainErrorTranslator.translate(new Error('ADD_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION')))
       .toStrictEqual(new InvariantError('tidak dapat membuat reply baru karena tipe data tidak sesuai'));
+    expect(DomainErrorTranslator.translate(new Error('ADDED_COMMENT_LIKE.NOT_CONTAIN_NEEDED_PROPERTY')))
+      .toStrictEqual(new InvariantError('tidak dapat membuat like baru karena properti yang dibutuhkan tidak ada'));
+    expect(DomainErrorTranslator.translate(new Error('ADDED_COMMENT_LIKE.NOT_MEET_DATA_TYPE_SPECIFICATION')))
+      .toStrictEqual(new InvariantError('tidak dapat membuat like baru karena tipe data tidak sesuai'));
+    expect(DomainErrorTranslator.translate(new Error('PUT_COMMENT_LIKE_USE_CASE.EXECUTE_ERROR')))
+      .toStrictEqual(new Error('gagal mengubah comment like'));
   });
 
   it('should return original error when error message does not need to be translated', () => {

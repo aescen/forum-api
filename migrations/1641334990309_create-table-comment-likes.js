@@ -1,14 +1,10 @@
 /* eslint-disable camelcase */
 
 exports.up = (pgm) => {
-  pgm.createTable('replies', {
+  pgm.createTable('comment_likes', {
     id: {
       type: 'VARCHAR(50)',
       primaryKey: true,
-    },
-    content: {
-      type: 'TEXT',
-      notNull: true,
     },
     owner: {
       type: 'VARCHAR(50)',
@@ -30,10 +26,10 @@ exports.up = (pgm) => {
     },
   });
 
-  pgm.addConstraint('replies', 'fk_comments.owner_users.id', 'FOREIGN KEY(owner) REFERENCES users(id) ON DELETE CASCADE');
-  pgm.addConstraint('replies', 'fk_comments.comment_id_comments.id', 'FOREIGN KEY(comment_id) REFERENCES comments(id) ON DELETE CASCADE');
+  pgm.addConstraint('comment_likes', 'fk_likes.owner_users.id', 'FOREIGN KEY(owner) REFERENCES users(id) ON DELETE CASCADE');
+  pgm.addConstraint('comment_likes', 'fk_likes.comment_id_comments.id', 'FOREIGN KEY(comment_id) REFERENCES comments(id) ON DELETE CASCADE');
 };
 
 exports.down = (pgm) => {
-  pgm.dropTable('replies');
+  pgm.dropTable('comment_likes');
 };

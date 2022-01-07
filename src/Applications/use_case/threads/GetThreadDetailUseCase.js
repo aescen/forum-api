@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 class GetThreadDetailUseCase {
   constructor({
     iThreadRepository,
@@ -21,12 +22,12 @@ class GetThreadDetailUseCase {
     // eslint-disable-next-line no-restricted-syntax
     for await (const comment of _filteredComments) {
       const {
-        id, content, date, username,
+        id, content, date, username, likeCount,
       } = comment;
       const _replies = await this._replyRepository.getRepliesByCommentId(id);
       const _filteredReplies = this._filterReplies(_replies);
       comments.push({
-        id, username, date, content, replies: _filteredReplies,
+        id, username, date, content, likeCount, replies: _filteredReplies,
       });
     }
 
@@ -36,13 +37,14 @@ class GetThreadDetailUseCase {
   _filterComments(comments) {
     return comments.map((comment) => {
       const {
-        id, username, date, content, deleted,
+        id, username, date, content, deleted, likes,
       } = comment;
       return {
         id,
         username,
         date,
         content: deleted ? this._DELETED_COMMENT_STR : content,
+        likeCount: parseInt(likes, 10),
       };
     });
   }

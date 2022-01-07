@@ -13,11 +13,11 @@ class CommentRepositoryPostgres extends ICommentRepository {
   async addComment(addComment, threadId, owner) {
     const { content } = addComment;
     const id = `comment-${this._idGenerator()}`;
-    const createdAt = new Date().toISOString();
 
     const query = {
-      text: 'INSERT INTO comments VALUES($1, $2, $3, $4, $5, $6) RETURNING id, content, owner',
-      values: [id, content, owner, threadId, createdAt, false],
+      text: `INSERT INTO comments (id, content, owner, thread_id)
+        VALUES($1, $2, $3, $4) RETURNING id, content, owner`,
+      values: [id, content, owner, threadId],
     };
 
     const result = await this._pool.query(query);
@@ -25,10 +25,22 @@ class CommentRepositoryPostgres extends ICommentRepository {
     return new AddedComment({ ...result.rows[0] });
   }
 
-  async getCommentsByThreadId(commentId) {
+  async getCommentsByThreadId(threadId) {
     const query = {
       text: `SELECT
-                comments.id, users.username, comments.created_at AS date, comments.content, comments.is_deleted AS deleted
+                comments.id,
+                users.username,
+                comments.created_at AS date,
+                comments.content,
+                comments.is_deleted AS deleted,
+                (
+                  SELECT
+                    COUNT(*)
+                  FROM
+                    comment_likes
+                  WHERE
+                    comment_likes.comment_id = comments.id AND comment_likes.is_deleted = FALSE
+                ) AS likes
               FROM
                 comments
               LEFT JOIN
@@ -40,14 +52,10 @@ class CommentRepositoryPostgres extends ICommentRepository {
               ORDER BY
                 comments.created_at
               ASC`,
-      values: [commentId],
+      values: [threadId],
     };
 
     const result = await this._pool.query(query);
-
-    if (!result.rowCount) {
-      return [];
-    }
 
     return result.rows;
   }
@@ -69,7 +77,6 @@ class CommentRepositoryPostgres extends ICommentRepository {
   }
 
   async verifyCommentOwner(id, owner) {
-    await this.verifyCommentId(id);
     const query = {
       text: 'SELECT id FROM comments WHERE id = $1 AND owner = $2',
       values: [id, owner],

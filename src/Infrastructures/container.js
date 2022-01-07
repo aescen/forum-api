@@ -12,6 +12,7 @@ const pool = require('./database/postgres/pool');
 const IUserRepository = require('../Domains/users/IUserRepository');
 const IThreadRepository = require('../Domains/threads/IThreadRepository');
 const ICommentRepository = require('../Domains/comments/ICommentRepository');
+const ICommentLikeRepository = require('../Domains/commentlikes/ICommentLikeRepository');
 const IReplyRepository = require('../Domains/replies/IReplyRepository');
 const IAuthenticationRepository = require('../Domains/authentications/IAuthenticationRepository');
 const IAuthenticationTokenManager = require('../Applications/security/IAuthenticationTokenManager');
@@ -20,6 +21,7 @@ const IPasswordHash = require('../Applications/security/IPasswordHash');
 const UserRepositoryPostgres = require('./repository/UserRepositoryPostgres');
 const ThreadRepositoryPostgres = require('./repository/ThreadRepositoryPostgres');
 const CommentRepositoryPostgres = require('./repository/CommentRepositoryPostgres');
+const CommentLikeRepositoryPostgres = require('./repository/CommentLikeRepositoryPostgres');
 const ReplyRepositoryPostgres = require('./repository/ReplyRepositoryPostgres');
 const AuthenticationRepositoryPostgres = require('./repository/AuthenticationRepositoryPostgres');
 const JwtTokenManager = require('./security/JwtTokenManager');
@@ -31,6 +33,7 @@ const AddThreadUseCase = require('../Applications/use_case/threads/AddThreadUseC
 const GetThreadDetailUseCase = require('../Applications/use_case/threads/GetThreadDetailUseCase');
 const AddCommentUseCase = require('../Applications/use_case/comments/AddCommentUseCase');
 const DeleteCommentUseCase = require('../Applications/use_case/comments/DeleteCommentUseCase');
+const PutCommentLikeUseCase = require('../Applications/use_case/commentlikes/PutCommentLikeUseCase');
 const AddReplyUseCase = require('../Applications/use_case/replies/AddReplyUseCase');
 const DeleteReplyUseCase = require('../Applications/use_case/replies/DeleteReplyUseCase');
 const LoginUserUseCase = require('../Applications/use_case/authentications/LoginUserUseCase');
@@ -106,6 +109,20 @@ container.register([
   {
     key: ICommentRepository.name,
     Class: CommentRepositoryPostgres,
+    parameter: {
+      dependencies: [
+        {
+          concrete: pool,
+        },
+        {
+          concrete: nanoid,
+        },
+      ],
+    },
+  },
+  {
+    key: ICommentLikeRepository.name,
+    Class: CommentLikeRepositoryPostgres,
     parameter: {
       dependencies: [
         {
@@ -216,6 +233,27 @@ container.register([
         {
           name: 'iCommentRepository',
           internal: ICommentRepository.name,
+        },
+      ],
+    },
+  },
+  {
+    key: PutCommentLikeUseCase.name,
+    Class: PutCommentLikeUseCase,
+    parameter: {
+      injectType: 'destructuring',
+      dependencies: [
+        {
+          name: 'iThreadRepository',
+          internal: IThreadRepository.name,
+        },
+        {
+          name: 'iCommentRepository',
+          internal: ICommentRepository.name,
+        },
+        {
+          name: 'iCommentLikeRepository',
+          internal: ICommentLikeRepository.name,
         },
       ],
     },

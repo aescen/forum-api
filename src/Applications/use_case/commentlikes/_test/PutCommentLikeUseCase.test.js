@@ -2,7 +2,7 @@
 const NotFoundError = require('../../../../Commons/exceptions/NotFoundError');
 const IThreadRepository = require('../../../../Domains/threads/IThreadRepository');
 const ICommentRepository = require('../../../../Domains/comments/ICommentRepository');
-const ICommentLikeRepository = require('../../../../Domains/likes/ICommentLikeRepository');
+const ICommentLikeRepository = require('../../../../Domains/commentlikes/ICommentLikeRepository');
 const PutCommentLikeUseCase = require('../PutCommentLikeUseCase');
 
 describe('PutCommentLikeUseCase', () => {

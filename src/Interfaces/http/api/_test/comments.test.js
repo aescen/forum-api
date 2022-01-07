@@ -18,15 +18,19 @@ describe('/comments endpoint', () => {
     await pool.end();
   });
 
+  // Commons
+  const userId = 'user-123';
+  const threadId = 'thread-123';
+  const commentId = 'comment-123';
+  const accessTokenPayload = { id: userId, username: 'dicoding' };
+  const jwtTokenManager = new JwtTokenManager(Jwt.token);
+
   describe('when POST /comments', () => {
     it('should respond 201 and persisted comment', async () => {
       // Arrange
-      const userId = 'user-123';
-      const threadId = 'thread-123';
       await UsersTableTestHelper.addUser({ id: userId, username: 'dicoding' });
       await ThreadsTableTestHelper.addThread({ id: threadId });
-      const jwtTokenManager = new JwtTokenManager(Jwt.token);
-      const accessToken = await jwtTokenManager.createAccessToken({ id: userId, username: 'dicoding' });
+      const accessToken = await jwtTokenManager.createAccessToken(accessTokenPayload);
       const requestPayload = {
         content: 'comment',
       };
@@ -49,11 +53,8 @@ describe('/comments endpoint', () => {
 
     it('should respond 404 when threadId is invalid', async () => {
       // Arrange
-      const userId = 'user-123';
-      const threadId = 'thread-123';
       await UsersTableTestHelper.addUser({ id: userId, username: 'dicoding' });
-      const jwtTokenManager = new JwtTokenManager(Jwt.token);
-      const accessToken = await jwtTokenManager.createAccessToken({ id: userId, username: 'dicoding' });
+      const accessToken = await jwtTokenManager.createAccessToken(accessTokenPayload);
       const requestPayload = {
         content: 'comment',
       };
@@ -76,12 +77,9 @@ describe('/comments endpoint', () => {
 
     it('should respond 400 when request payload does not contain needed property', async () => {
       // Arrange
-      const userId = 'user-123';
-      const threadId = 'thread-123';
       await UsersTableTestHelper.addUser({ id: userId, username: 'dicoding' });
       await ThreadsTableTestHelper.addThread({ id: threadId });
-      const jwtTokenManager = new JwtTokenManager(Jwt.token);
-      const accessToken = await jwtTokenManager.createAccessToken({ id: userId, username: 'dicoding' });
+      const accessToken = await jwtTokenManager.createAccessToken(accessTokenPayload);
       const requestPayload = {
         comment: 'comment',
       };
@@ -104,12 +102,9 @@ describe('/comments endpoint', () => {
 
     it('should respond 400 when request payload does not meet data type specification', async () => {
       // Arrange
-      const userId = 'user-123';
-      const threadId = 'thread-123';
       await UsersTableTestHelper.addUser({ id: userId, username: 'dicoding' });
       await ThreadsTableTestHelper.addThread({ id: threadId });
-      const jwtTokenManager = new JwtTokenManager(Jwt.token);
-      const accessToken = await jwtTokenManager.createAccessToken({ id: userId, username: 'dicoding' });
+      const accessToken = await jwtTokenManager.createAccessToken(accessTokenPayload);
       const requestPayload = {
         content: [],
       };
@@ -134,14 +129,10 @@ describe('/comments endpoint', () => {
   describe('when DELETE /comments', () => {
     it('should respond 200 and soft delete comment', async () => {
       // Arrange
-      const userId = 'user-123';
-      const threadId = 'thread-123';
-      const commentId = 'comment-123';
       await UsersTableTestHelper.addUser({ id: userId, username: 'dicoding' });
       await ThreadsTableTestHelper.addThread({ id: threadId });
       await CommentsTableTestHelper.addComment({ id: commentId });
-      const jwtTokenManager = new JwtTokenManager(Jwt.token);
-      const accessToken = await jwtTokenManager.createAccessToken({ id: userId, username: 'dicoding' });
+      const accessToken = await jwtTokenManager.createAccessToken(accessTokenPayload);
       const server = await createServer(container);
 
       // Action
@@ -161,21 +152,17 @@ describe('/comments endpoint', () => {
 
     it('should respond 403 when request is unauthorized', async () => {
       // Arrange
-      const userId = 'user-123';
-      const threadId = 'thread-123';
-      const commentId = 'comment-123';
       await UsersTableTestHelper.addUser({ id: userId, username: 'dicoding' });
       await ThreadsTableTestHelper.addThread({ id: threadId });
       await CommentsTableTestHelper.addComment({ id: commentId });
-      const jwtTokenManager = new JwtTokenManager(Jwt.token);
-      const accessToken = await jwtTokenManager.createAccessToken({ id: 'user-000', username: 'user' });
+      const unauthorizedAccessToken = await jwtTokenManager.createAccessToken({ id: 'user-000', username: 'user' });
       const server = await createServer(container);
 
       // Action
       const response = await server.inject({
         method: 'DELETE',
         url: `/threads/${threadId}/comments/${commentId}`,
-        headers: { Authorization: `Bearer ${accessToken}` },
+        headers: { Authorization: `Bearer ${unauthorizedAccessToken}` },
       });
 
       // Assert

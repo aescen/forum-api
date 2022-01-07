@@ -2,7 +2,7 @@ const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const CommentLikesTableTestHelper = require('../../../../tests/CommentLikesTableTestHelper');
 const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
-const AddedCommentLike = require('../../../Domains/likes/entities/AddedCommentLike');
+const AddedCommentLike = require('../../../Domains/commentlikes/entities/AddedCommentLike');
 const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const pool = require('../../database/postgres/pool');
@@ -162,33 +162,6 @@ describe('CommentLikeRepositoryPostgres', () => {
       // Assert
       expect(result).toStrictEqual(likeId);
       expect(savedCommentLike[0].is_deleted).toStrictEqual(true);
-    });
-  });
-
-  describe('getCommentLikesByCommentId', () => {
-    it('should return 0 when like not found', async () => {
-      // Arrange
-      const commentLikeRepositoryPostgres = new CommentLikeRepositoryPostgres(pool, {});
-
-      // Action & Assert
-      const result = await commentLikeRepositoryPostgres.getCommentLikesByCommentId(commentId);
-      expect(result).toStrictEqual(0);
-    });
-
-    it('should return 1 after adding a comment\'s like', async () => {
-      // Arrange
-      const commentLikeRepositoryPostgres = new CommentLikeRepositoryPostgres(pool, {});
-
-      await UsersTableTestHelper.addUser({ username });
-      await ThreadsTableTestHelper.addThread({ id: threadId });
-      await CommentsTableTestHelper.addComment({ id: commentId });
-      await CommentLikesTableTestHelper.addCommentLike({ id: likeId });
-
-      // Action
-      const result = await commentLikeRepositoryPostgres.getCommentLikesByCommentId(commentId);
-
-      // Assert
-      expect(result).toStrictEqual(1);
     });
   });
 });
