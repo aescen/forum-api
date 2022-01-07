@@ -5,7 +5,7 @@ const IPasswordHash = require('../../../security/IPasswordHash');
 const LoginUserUseCase = require('../LoginUserUseCase');
 const NewAuth = require('../../../../Domains/authentications/entities/NewAuth');
 
-describe('GetAuthenticationUseCase', () => {
+describe('LoginUserUseCase', () => {
   it('should orchestrating the get authentication action correctly', async () => {
     // Arrange
     const useCasePayload = {

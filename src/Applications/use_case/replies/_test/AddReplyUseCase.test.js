@@ -34,12 +34,9 @@ describe('AddReplyUseCase', () => {
     const mockCommentRepository = new ICommentRepository();
     const mockReplyRepository = new IReplyRepository();
     // Mocking
-    mockThreadRepository.verifyThreadId = jest.fn()
-      .mockImplementation(() => Promise.resolve(true));
-    mockCommentRepository.verifyCommentId = jest.fn()
-      .mockImplementation(() => Promise.resolve(true));
-    mockReplyRepository.addReply = jest.fn()
-      .mockImplementation(() => Promise.resolve(expectedAddedReply));
+    mockThreadRepository.verifyThreadId = jest.fn(() => Promise.resolve(true));
+    mockCommentRepository.verifyCommentId = jest.fn(() => Promise.resolve(true));
+    mockReplyRepository.addReply = jest.fn(() => Promise.resolve(expectedAddedReply));
 
     /* use case instances */
     const addReplyUseCase = new AddReplyUseCase({

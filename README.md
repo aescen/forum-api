@@ -1,1 +1,1 @@
-# Forum API v1
+# Forum API v2

@@ -24,6 +24,7 @@ describe('GetThreadDetailUseCase', () => {
         date: 'date',
         content: 'konten',
         deleted: false,
+        likes: '0',
       },
     ];
     const expectedDbResultReplies = [
@@ -34,13 +35,6 @@ describe('GetThreadDetailUseCase', () => {
         content: 'konten',
         deleted: false,
       },
-      {
-        id: 'reply-124',
-        username: 'user2',
-        date: 'date',
-        content: 'konten2',
-        deleted: false,
-      },
     ];
     const expectedComments = [
       {
@@ -48,6 +42,7 @@ describe('GetThreadDetailUseCase', () => {
         username: 'user1',
         date: 'date',
         content: 'konten',
+        likeCount: 0,
       },
     ];
     const expectedReplies = [
@@ -56,12 +51,6 @@ describe('GetThreadDetailUseCase', () => {
         username: 'user1',
         date: 'date',
         content: 'konten',
-      },
-      {
-        id: 'reply-124',
-        username: 'user2',
-        date: 'date',
-        content: 'konten2',
       },
     ];
     const expectedThreadDetail = {
@@ -79,8 +68,7 @@ describe('GetThreadDetailUseCase', () => {
     const mockCommentRepository = new ICommentRepository();
     const mockReplyRepository = new IReplyRepository();
     // Mocking
-    mockThreadRepository.verifyThreadId = jest.fn()
-      .mockImplementation(() => Promise.resolve(true));
+    mockThreadRepository.verifyThreadId = jest.fn(() => Promise.resolve(true));
     mockThreadRepository.getThreadById = jest.fn()
       .mockImplementation(() => Promise.resolve(expectedThread));
     mockCommentRepository.getCommentsByThreadId = jest.fn()
@@ -106,7 +94,9 @@ describe('GetThreadDetailUseCase', () => {
     expect(mockCommentRepository.getCommentsByThreadId).toBeCalledWith(threadId);
     expect(mockReplyRepository.getRepliesByCommentId).toBeCalledWith(commentId);
     expect(spyOnFilterComments).toBeCalledWith(expectedDbResultComments);
+    expect(spyOnFilterComments).toHaveReturnedWith(expectedComments);
     expect(spyOnFilterReplies).toBeCalledWith(expectedDbResultReplies);
+    expect(spyOnFilterReplies).toHaveReturnedWith(expectedReplies);
   });
 
   describe('_filterComments', () => {
@@ -119,6 +109,7 @@ describe('GetThreadDetailUseCase', () => {
           date: 'date',
           content: 'konten',
           deleted: true,
+          likes: '0',
         },
       ];
       const expectedComments = [
@@ -127,9 +118,10 @@ describe('GetThreadDetailUseCase', () => {
           username: 'user1',
           date: 'date',
           content: '**komentar telah dihapus**',
+          likeCount: 0,
         },
       ];
-      const getThreadUseCase = new GetThreadDetailUseCase({}, {}, {});
+      const getThreadUseCase = new GetThreadDetailUseCase({});
 
       // Action
       const result = getThreadUseCase._filterComments(dbResultComments);
@@ -147,6 +139,7 @@ describe('GetThreadDetailUseCase', () => {
           date: 'date',
           content: 'konten',
           deleted: false,
+          likes: '0',
         },
       ];
       const expectedComments = [
@@ -155,9 +148,10 @@ describe('GetThreadDetailUseCase', () => {
           username: 'user1',
           date: 'date',
           content: 'konten',
+          likeCount: 0,
         },
       ];
-      const getThreadUseCase = new GetThreadDetailUseCase({}, {}, {});
+      const getThreadUseCase = new GetThreadDetailUseCase({});
 
       // Action
       const result = getThreadUseCase._filterComments(dbResultComments);
@@ -187,7 +181,7 @@ describe('GetThreadDetailUseCase', () => {
           content: '**balasan telah dihapus**',
         },
       ];
-      const getThreadUseCase = new GetThreadDetailUseCase({}, {}, {});
+      const getThreadUseCase = new GetThreadDetailUseCase({});
 
       // Action
       const result = getThreadUseCase._filterReplies(dbResultReplies);
@@ -215,7 +209,7 @@ describe('GetThreadDetailUseCase', () => {
           content: 'konten',
         },
       ];
-      const getThreadUseCase = new GetThreadDetailUseCase({}, {}, {});
+      const getThreadUseCase = new GetThreadDetailUseCase({});
 
       // Action
       const result = getThreadUseCase._filterReplies(dbResultReplies);
