@@ -90,5 +90,6 @@ describe('PutCommentLikeUseCase', () => {
     // Action & Assert
     await expect(putCommentLikeUseCase.execute(threadId, commentId, userId))
       .rejects.toThrowError('PUT_COMMENT_LIKE_USE_CASE.EXECUTE_ERROR');
+    expect(mockCommentLikeRepository.getCommentLikeId).toBeCalledWith(commentId, userId);
   });
 });
